@@ -18,7 +18,7 @@ class DAT(nn.Module):
     def __init__(
         self, dim_heads, num_heads, num_offset_groups, offset_kernel_size, offset_stride
     ):
-        super().__init__
+        super().__init__()
 
         self.dim_heads = dim_heads
         self.num_heads = num_heads
