@@ -31,6 +31,8 @@ class DAT(nn.Module):
         embed_dim = self.num_heads * self.dim_heads
         self.offset_dims = embed_dim // self.num_offset_groups
 
+        self.Wq = nn.Conv2d(embed_dim, embed_dim, kernel_size=1, stride=1, padding=0)
+
         self.offset_net = nn.Sequential(
             nn.Conv2d(
                 self.offset_dims,
@@ -46,4 +48,12 @@ class DAT(nn.Module):
         )
 
     def forward(self, x):
-        pass
+        B, C, H, W = x.shape
+        q = self.Wq(x)
+        q_off = einops.rearrange(
+            q,
+            "b (g c) h w -> (b g) c h w",
+            g=self.num_offset_groups,
+            c=self.offset_dims,
+        )
+        offset = self.offset_net(q_off).contigous()
